@@ -41,15 +41,15 @@ public class ProdutoServiceImpl {
 
     @Transactional(readOnly = true)
     public List<ProdutoResponseDTO> listarTodos(Boolean ativo) {
-        if(ativo){
-            return produtoRepository.findAllByAtivo(ativo).stream()
-                    .map(ProdutoResponseDTO::new)
-                    .collect(Collectors.toList());
-        }else{
-            return produtoRepository.findAll().stream()
-                    .map(ProdutoResponseDTO::new)
-                    .collect(Collectors.toList());
+        List<Produto> produtos;
+        if (ativo != null) {
+            produtos = produtoRepository.findAllByAtivo(ativo);
+        } else {
+            produtos = produtoRepository.findAll();
         }
+        return produtos.stream()
+                .map(ProdutoResponseDTO::new)
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -153,12 +153,30 @@ public class ProdutoServiceImpl {
         movimento.setTipo(tipo);
         movimento.setQuantidade(quantidadeMovimentada);
         movimento.setData(LocalDateTime.now());
-        movimento.setMotivo(dto.getMotivo());
+        movimento.setMotivo(verificaMotivo(dto.getTipo(),dto.getMotivo(), dto.getQuantidade()));
         movimentoEstoqueRepository.save(movimento);
 
         produto.setQuantidadeEstoque(novoEstoque);
         Produto produtoAtualizado = produtoRepository.save(produto);
 
         return new ProdutoResponseDTO(produtoAtualizado);
+    }
+
+    public String verificaMotivo(TipoMovimento tipoMovimento, String motivo, int quantidade) {
+        if(motivo.isBlank()){
+            switch (tipoMovimento) {
+                case ENTRADA:
+                    return "Reposição de estoque ";
+                case AJUSTE:
+                    if(quantidade <= 0){
+                        return "Remoção por vencimento ou defeito do produto";
+                    }else{
+                        return "Devolução do produto";
+                    }
+                default:
+            }
+        }
+        return motivo;
+
     }
 }

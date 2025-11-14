@@ -40,7 +40,7 @@ public class Produto {
     @Column(nullable = false)
     private BigDecimal precoUnitario;
 
-    @Column(nullable = false)
+    @Column
     private boolean ativo;
 
     @OneToMany(

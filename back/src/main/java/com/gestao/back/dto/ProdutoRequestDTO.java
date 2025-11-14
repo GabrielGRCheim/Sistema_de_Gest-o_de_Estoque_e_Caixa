@@ -33,7 +33,6 @@ public class ProdutoRequestDTO {
     @DecimalMin(value = "0.0", inclusive = true, message = "Preço não pode ser negativo")
     private BigDecimal precoUnitario;
 
-    @NotNull(message = "Atributo ativo obrigatório")
     private boolean ativo;
 
     public ProdutoRequestDTO() {
