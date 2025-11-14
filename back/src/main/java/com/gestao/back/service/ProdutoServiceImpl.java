@@ -40,8 +40,14 @@ public class ProdutoServiceImpl {
     private UsuarioRepository usuarioRepository;
 
     @Transactional(readOnly = true)
-    public List<ProdutoResponseDTO> listarTodos() {
-        return produtoRepository.findAll().stream()
+    public List<ProdutoResponseDTO> listarTodos(Boolean ativo) {
+        List<Produto> produtos;
+        if (ativo != null) {
+            produtos = produtoRepository.findAllByAtivo(ativo);
+        } else {
+            produtos = produtoRepository.findAll();
+        }
+        return produtos.stream()
                 .map(ProdutoResponseDTO::new)
                 .collect(Collectors.toList());
     }
@@ -71,6 +77,7 @@ public class ProdutoServiceImpl {
         produto.setCategoria(dto.getCategoria());
         produto.setPrecoUnitario(dto.getPrecoUnitario());
         produto.setQuantidadeEstoque(dto.getQuantidadeEstoque());
+        produto.setAtivo(true);
 
         Produto produtoSalvo = produtoRepository.save(produto);
 
@@ -90,6 +97,7 @@ public class ProdutoServiceImpl {
         produto.setNome(dto.getNome());
         produto.setCategoria(dto.getCategoria());
         produto.setPrecoUnitario(dto.getPrecoUnitario());
+        produto.setAtivo(dto.isAtivo());
 
         Produto produtoAtualizado = produtoRepository.save(produto);
         return new ProdutoResponseDTO(produtoAtualizado);
@@ -97,8 +105,14 @@ public class ProdutoServiceImpl {
 
     @Transactional
     public void deletarProduto(Long id) {
+        if(!produtoRepository.getReferenceById(id).isAtivo()) {
+            throw new IllegalArgumentException("Produto precisa estar desativado para ser deletado");
+        }
         if (!produtoRepository.existsById(id)) {
             throw new EntityNotFoundException("Produto não encontrado");
+        }
+        if(produtoRepository.getReferenceById(id).getQuantidadeEstoque() != 0){
+            throw new IllegalArgumentException("Produto não pode ser deletado pois esta em estoque");
         }
         produtoRepository.deleteById(id);
     }
@@ -139,12 +153,30 @@ public class ProdutoServiceImpl {
         movimento.setTipo(tipo);
         movimento.setQuantidade(quantidadeMovimentada);
         movimento.setData(LocalDateTime.now());
-        movimento.setMotivo(dto.getMotivo());
+        movimento.setMotivo(verificaMotivo(dto.getTipo(),dto.getMotivo(), dto.getQuantidade()));
         movimentoEstoqueRepository.save(movimento);
 
         produto.setQuantidadeEstoque(novoEstoque);
         Produto produtoAtualizado = produtoRepository.save(produto);
 
         return new ProdutoResponseDTO(produtoAtualizado);
+    }
+
+    public String verificaMotivo(TipoMovimento tipoMovimento, String motivo, int quantidade) {
+        if(motivo.isBlank()){
+            switch (tipoMovimento) {
+                case ENTRADA:
+                    return "Reposição de estoque ";
+                case AJUSTE:
+                    if(quantidade <= 0){
+                        return "Remoção por vencimento ou defeito do produto";
+                    }else{
+                        return "Devolução do produto";
+                    }
+                default:
+            }
+        }
+        return motivo;
+
     }
 }

@@ -33,6 +33,8 @@ public class ProdutoRequestDTO {
     @DecimalMin(value = "0.0", inclusive = true, message = "Preço não pode ser negativo")
     private BigDecimal precoUnitario;
 
+    private boolean ativo;
+
     public ProdutoRequestDTO() {
     }
 
@@ -74,5 +76,13 @@ public class ProdutoRequestDTO {
 
     public void setPrecoUnitario(BigDecimal precoUnitario) {
         this.precoUnitario = precoUnitario;
+    }
+
+    public boolean isAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
     }
 }

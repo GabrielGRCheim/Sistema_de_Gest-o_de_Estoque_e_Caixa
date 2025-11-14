@@ -40,6 +40,9 @@ public class Produto {
     @Column(nullable = false)
     private BigDecimal precoUnitario;
 
+    @Column
+    private boolean ativo;
+
     @OneToMany(
             mappedBy = "produto",
             cascade = CascadeType.ALL,
@@ -52,13 +55,14 @@ public class Produto {
 
     }
 
-    public Produto(String categoria, long id, String codigo, String nome, BigDecimal preco, int quantidadeEstoque) {
+    public Produto(String categoria, long id, String codigo, String nome, BigDecimal preco, int quantidadeEstoque, boolean ativo) {
         this.categoria = categoria;
         this.id = id;
         this.codigo = codigo;
         this.nome = nome;
         this.precoUnitario = preco;
         this.quantidadeEstoque = quantidadeEstoque;
+        this.ativo = ativo;
     }
 
     public long getId() {
@@ -103,6 +107,14 @@ public class Produto {
 
     public String getCodigo() {
         return codigo;
+    }
+
+    public boolean isAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
     }
 
     public void setCodigo(String codigo) {
