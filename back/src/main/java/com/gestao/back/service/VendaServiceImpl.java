@@ -53,7 +53,7 @@ public class VendaServiceImpl {
 
     @Transactional
     public VendaResponseDTO registrarVenda(VendaRequestDTO dto) {
-        
+
         Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
                 .orElseThrow(() -> new EntityNotFoundException("Usuário (Operador) não encontrado"));
 
@@ -81,6 +81,10 @@ public class VendaServiceImpl {
 
             if (produto.getQuantidadeEstoque() < itemDto.getQuantidade()) {
                 throw new RuntimeException("Estoque insuficiente para o produto: " + produto.getNome());
+            }
+
+            if (!produto.isAtivo()) {
+                throw new RuntimeException("Produto inativo não pode ser vendido: " + produto.getNome());
             }
 
             int novoEstoque = produto.getQuantidadeEstoque() - itemDto.getQuantidade();
