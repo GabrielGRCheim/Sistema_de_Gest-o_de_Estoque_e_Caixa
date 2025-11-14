@@ -40,10 +40,16 @@ public class ProdutoServiceImpl {
     private UsuarioRepository usuarioRepository;
 
     @Transactional(readOnly = true)
-    public List<ProdutoResponseDTO> listarTodos() {
-        return produtoRepository.findAll().stream()
-                .map(ProdutoResponseDTO::new)
-                .collect(Collectors.toList());
+    public List<ProdutoResponseDTO> listarTodos(Boolean ativo) {
+        if(ativo){
+            return produtoRepository.findAllByAtivo(ativo).stream()
+                    .map(ProdutoResponseDTO::new)
+                    .collect(Collectors.toList());
+        }else{
+            return produtoRepository.findAll().stream()
+                    .map(ProdutoResponseDTO::new)
+                    .collect(Collectors.toList());
+        }
     }
 
     @Transactional(readOnly = true)
@@ -71,6 +77,7 @@ public class ProdutoServiceImpl {
         produto.setCategoria(dto.getCategoria());
         produto.setPrecoUnitario(dto.getPrecoUnitario());
         produto.setQuantidadeEstoque(dto.getQuantidadeEstoque());
+        produto.setAtivo(true);
 
         Produto produtoSalvo = produtoRepository.save(produto);
 
@@ -90,6 +97,7 @@ public class ProdutoServiceImpl {
         produto.setNome(dto.getNome());
         produto.setCategoria(dto.getCategoria());
         produto.setPrecoUnitario(dto.getPrecoUnitario());
+        produto.setAtivo(dto.isAtivo());
 
         Produto produtoAtualizado = produtoRepository.save(produto);
         return new ProdutoResponseDTO(produtoAtualizado);
@@ -97,8 +105,14 @@ public class ProdutoServiceImpl {
 
     @Transactional
     public void deletarProduto(Long id) {
+        if(!produtoRepository.getReferenceById(id).isAtivo()) {
+            throw new IllegalArgumentException("Produto precisa estar desativado para ser deletado");
+        }
         if (!produtoRepository.existsById(id)) {
             throw new EntityNotFoundException("Produto não encontrado");
+        }
+        if(produtoRepository.getReferenceById(id).getQuantidadeEstoque() != 0){
+            throw new IllegalArgumentException("Produto não pode ser deletado pois esta em estoque");
         }
         produtoRepository.deleteById(id);
     }

@@ -20,6 +20,7 @@ public class ProdutoResponseDTO {
     private String categoria;
     private Integer quantidadeEstoque;
     private BigDecimal precoUnitario;
+    private boolean ativo;
 
     public ProdutoResponseDTO() {
     }
@@ -31,6 +32,7 @@ public class ProdutoResponseDTO {
         this.categoria = produto.getCategoria();
         this.quantidadeEstoque = produto.getQuantidadeEstoque();
         this.precoUnitario = produto.getPrecoUnitario();
+        this.ativo = produto.isAtivo();
     }
 
     public Long getId() {
@@ -79,5 +81,13 @@ public class ProdutoResponseDTO {
 
     public void setPrecoUnitario(BigDecimal precoUnitario) {
         this.precoUnitario = precoUnitario;
+    }
+
+    public boolean isAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
     }
 }

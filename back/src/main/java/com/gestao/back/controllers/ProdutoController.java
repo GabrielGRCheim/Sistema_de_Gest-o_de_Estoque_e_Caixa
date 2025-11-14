@@ -21,10 +21,18 @@ public class ProdutoController {
     @Autowired
     private ProdutoServiceImpl produtoService;
 
+
     @GetMapping
-    public ResponseEntity<List<ProdutoResponseDTO>> listarTodos() {
-        return ResponseEntity.ok(produtoService.listarTodos());
+    public ResponseEntity<List<ProdutoResponseDTO>> listarTodos(
+            @RequestParam(required = false) Boolean ativo
+    ) {
+        return ResponseEntity.ok(produtoService.listarTodos(ativo));
     }
+
+//    @GetMapping
+//    public ResponseEntity<List<ProdutoResponseDTO>> listarTodos() {
+//        return ResponseEntity.ok(produtoService.listarTodos());
+//    }
 
     @GetMapping("/{id}")
     public ResponseEntity<ProdutoResponseDTO> buscarPorId(@PathVariable Long id) {
