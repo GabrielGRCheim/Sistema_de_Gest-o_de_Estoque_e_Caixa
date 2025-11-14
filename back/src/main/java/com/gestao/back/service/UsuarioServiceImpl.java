@@ -66,7 +66,7 @@ public class UsuarioServiceImpl {
         novoUsuario.setNomeCompleto(dto.getNomeCompleto());
         novoUsuario.setEmail(dto.getEmail());
         novoUsuario.setPerfil(dto.getPerfil());
-        novoUsuario.setAtivo(dto.getAtivo());
+        novoUsuario.setAtivo(true);
         
         novoUsuario.setSenha(dto.getSenha());
 
