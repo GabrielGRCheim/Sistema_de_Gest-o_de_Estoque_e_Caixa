@@ -13,6 +13,7 @@ import com.gestao.back.model.entities.Produto;
 import com.gestao.back.model.entities.Usuario;
 import com.gestao.back.model.enums.TipoMovimento;
 import com.gestao.back.model.repositories.ItemVendaRepository;
+import com.gestao.back.model.repositories.AuditoriaRepository;
 import com.gestao.back.model.repositories.MovimentoEstoqueRepository;
 import com.gestao.back.model.repositories.ProdutoRepository;
 import com.gestao.back.model.repositories.UsuarioRepository;
@@ -43,6 +44,9 @@ public class ProdutoServiceImpl {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private AuditoriaService auditoriaService;
 
     @Transactional(readOnly = true)
     public List<ProdutoResponseDTO> listarTodos(Boolean ativo) {
@@ -127,6 +131,10 @@ public class ProdutoServiceImpl {
             movimentoEstoqueRepository.save(movimento);
         }
         produtoRepository.delete(produto);
+        Produto produtoAntes = cloneProduto(produtoRepository.getReferenceById(id));
+        produtoRepository.deleteById(id);
+
+        auditoriaService.registrar("Produtos","DELETE",produtoAntes,null,id);
     }
 
     @Transactional
@@ -165,7 +173,6 @@ public class ProdutoServiceImpl {
         movimento.setTipo(tipo);
         movimento.setQuantidade(quantidadeMovimentada);
         movimento.setData(LocalDateTime.now());
-        movimento.setNomeProdutoSnapshot(produto.getNome());
         movimento.setMotivo(verificaMotivo(dto.getTipo(),dto.getMotivo(), dto.getQuantidade()));
         movimentoEstoqueRepository.save(movimento);
 
@@ -191,5 +198,17 @@ public class ProdutoServiceImpl {
         }
         return motivo;
 
+    }
+
+    private Produto cloneProduto(Produto origem) {
+        Produto clone = new Produto();
+        clone.setId(origem.getId());
+        clone.setCodigo(origem.getCodigo());
+        clone.setNome(origem.getNome());
+        clone.setCategoria(origem.getCategoria());
+        clone.setQuantidadeEstoque(origem.getQuantidadeEstoque());
+        clone.setPrecoUnitario(origem.getPrecoUnitario());
+        clone.setAtivo(origem.isAtivo());
+        return clone;
     }
 }
