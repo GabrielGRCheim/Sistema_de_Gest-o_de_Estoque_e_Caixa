@@ -113,8 +113,8 @@ public class UsuarioServiceImpl {
         if (!usuarioRepository.existsById(id)) {
             throw new EntityNotFoundException("Usuário não encontrado");
         }
-        usuarioRepository.deleteById(id);
         auditoriaService.registrar("usuarios","UPDATE",cloneUsuario(usuarioRepository.getReferenceById(id)),null,id);
+        usuarioRepository.deleteById(id);
     }
 
     public Usuario cloneUsuario(Usuario origem) {

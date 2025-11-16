@@ -32,7 +32,7 @@ public class AuditoriaService {
             aud.setDadosAntes(antes != null ? objectMapper.writeValueAsString(antes) : null);
             aud.setDadosDepois(depois != null ? objectMapper.writeValueAsString(depois) : null);
 
-            aud.setUsuario("Teste");
+            aud.setUsuario(UsuarioContext.getUsuario());
 
             repository.save(aud);
 

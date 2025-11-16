@@ -2,7 +2,9 @@ package com.gestao.back.model.entities;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "Auditoria")
@@ -31,7 +33,9 @@ public class Auditoria {
     private String usuario;
 
     @Column(name = "data")
-    private LocalDateTime data =  LocalDateTime.now();
+    private LocalDateTime data =  LocalDateTime.of(
+            LocalDate.now(),
+            LocalTime.now().withNano(0));
 
     public Auditoria() {
     }
