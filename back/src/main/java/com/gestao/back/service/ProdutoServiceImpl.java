@@ -11,6 +11,7 @@ import com.gestao.back.model.entities.MovimentoEstoque;
 import com.gestao.back.model.entities.Produto;
 import com.gestao.back.model.entities.Usuario;
 import com.gestao.back.model.enums.TipoMovimento;
+import com.gestao.back.model.repositories.AuditoriaRepository;
 import com.gestao.back.model.repositories.MovimentoEstoqueRepository;
 import com.gestao.back.model.repositories.ProdutoRepository;
 import com.gestao.back.model.repositories.UsuarioRepository;
@@ -38,6 +39,9 @@ public class ProdutoServiceImpl {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private AuditoriaService auditoriaService;
 
     @Transactional(readOnly = true)
     public List<ProdutoResponseDTO> listarTodos(Boolean ativo) {
@@ -79,7 +83,11 @@ public class ProdutoServiceImpl {
         produto.setQuantidadeEstoque(dto.getQuantidadeEstoque());
         produto.setAtivo(true);
 
+
+
         Produto produtoSalvo = produtoRepository.save(produto);
+
+        auditoriaService.registrar("Produtos","CREATE",null,produto,produtoSalvo.getId());
 
         return new ProdutoResponseDTO(produtoSalvo);
     }
@@ -93,13 +101,18 @@ public class ProdutoServiceImpl {
             throw new IllegalArgumentException("Preço unitário não pode ser negativo");
         }
 
+        final Produto produtoAntes = cloneProduto(produto);
+
         produto.setCodigo(dto.getCodigo());
         produto.setNome(dto.getNome());
         produto.setCategoria(dto.getCategoria());
         produto.setPrecoUnitario(dto.getPrecoUnitario());
         produto.setAtivo(dto.isAtivo());
 
+        auditoriaService.registrar("Produtos","UPDATE",produtoAntes,produto,id);
+
         Produto produtoAtualizado = produtoRepository.save(produto);
+
         return new ProdutoResponseDTO(produtoAtualizado);
     }
 
@@ -114,7 +127,10 @@ public class ProdutoServiceImpl {
         if(produtoRepository.getReferenceById(id).getQuantidadeEstoque() != 0){
             throw new IllegalArgumentException("Produto não pode ser deletado pois esta em estoque");
         }
+        Produto produtoAntes = cloneProduto(produtoRepository.getReferenceById(id));
         produtoRepository.deleteById(id);
+
+        auditoriaService.registrar("Produtos","DELETE",produtoAntes,null,id);
     }
 
     @Transactional
@@ -178,5 +194,17 @@ public class ProdutoServiceImpl {
         }
         return motivo;
 
+    }
+
+    private Produto cloneProduto(Produto origem) {
+        Produto clone = new Produto();
+        clone.setId(origem.getId());
+        clone.setCodigo(origem.getCodigo());
+        clone.setNome(origem.getNome());
+        clone.setCategoria(origem.getCategoria());
+        clone.setQuantidadeEstoque(origem.getQuantidadeEstoque());
+        clone.setPrecoUnitario(origem.getPrecoUnitario());
+        clone.setAtivo(origem.isAtivo());
+        return clone;
     }
 }

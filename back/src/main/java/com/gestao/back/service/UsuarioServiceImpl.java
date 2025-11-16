@@ -27,6 +27,9 @@ public class UsuarioServiceImpl {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @Autowired
+    private AuditoriaService auditoriaService;
+
     @Transactional(readOnly = true)
     public List<UsuarioResponseDTO> listarTodos() {
         return usuarioRepository.findAll().stream()
@@ -71,6 +74,8 @@ public class UsuarioServiceImpl {
         novoUsuario.setSenha(dto.getSenha());
 
         Usuario usuarioSalvo = usuarioRepository.save(novoUsuario);
+
+        auditoriaService.registrar("usuarios","CREATE",null,novoUsuario,usuarioSalvo.getId());
         return new UsuarioResponseDTO(usuarioSalvo);
     }
     
@@ -85,6 +90,8 @@ public class UsuarioServiceImpl {
             }
         });
 
+        Usuario usuarioAntes = cloneUsuario(usuarioExistente);
+
         usuarioExistente.setNomeCompleto(dto.getNomeCompleto());
         usuarioExistente.setEmail(dto.getEmail());
         usuarioExistente.setPerfil(dto.getPerfil());
@@ -95,6 +102,9 @@ public class UsuarioServiceImpl {
         }
 
         Usuario usuarioAtualizado = usuarioRepository.save(usuarioExistente);
+
+        auditoriaService.registrar("usuarios","UPDATE",usuarioAntes,usuarioAtualizado,id);
+
         return new UsuarioResponseDTO(usuarioAtualizado);
     }
 
@@ -104,5 +114,16 @@ public class UsuarioServiceImpl {
             throw new EntityNotFoundException("Usuário não encontrado");
         }
         usuarioRepository.deleteById(id);
+        auditoriaService.registrar("usuarios","UPDATE",cloneUsuario(usuarioRepository.getReferenceById(id)),null,id);
+    }
+
+    public Usuario cloneUsuario(Usuario origem) {
+        Usuario usuarioAntes = new Usuario();
+        usuarioAntes.setNomeCompleto(origem.getNomeCompleto());
+        usuarioAntes.setEmail(origem.getEmail());
+        usuarioAntes.setPerfil(origem.getPerfil());
+        usuarioAntes.setAtivo(origem.getAtivo());
+        usuarioAntes.setSenha(origem.getSenha());
+        return usuarioAntes;
     }
 }
