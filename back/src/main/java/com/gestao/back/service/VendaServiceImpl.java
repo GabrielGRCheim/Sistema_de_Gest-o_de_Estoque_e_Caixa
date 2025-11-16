@@ -95,6 +95,7 @@ public class VendaServiceImpl {
             itemVenda.setProduto(produto);
             itemVenda.setQuantidade(itemDto.getQuantidade());
             itemVenda.setPrecoUnitario(itemDto.getPrecoUnitario());
+            itemVenda.setNomeProdutoSnapshot(produto.getNome());
             
             venda.adicionarItem(itemVenda);
         }
@@ -106,7 +107,8 @@ public class VendaServiceImpl {
             movimento.setTipo(TipoMovimento.SAIDA_VENDA);
             movimento.setQuantidade(itemSalvo.getQuantidade() * -1);
             movimento.setData(vendaSalva.getDataVenda()); 
-            movimento.setMotivo("Venda ID: " + vendaSalva.getId()); 
+            movimento.setMotivo("Venda ID: " + vendaSalva.getId());
+            movimento.setNomeProdutoSnapshot(itemSalvo.getNomeProdutoSnapshot());
             movimentoEstoqueRepository.save(movimento);
         }
         return new VendaResponseDTO(vendaSalva);
