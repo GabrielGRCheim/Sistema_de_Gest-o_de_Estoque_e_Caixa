@@ -7,10 +7,12 @@ package com.gestao.back.service;
 import com.gestao.back.dto.MovimentoEstoqueRequestDTO;
 import com.gestao.back.dto.ProdutoRequestDTO;
 import com.gestao.back.dto.ProdutoResponseDTO;
+import com.gestao.back.model.entities.ItemVenda;
 import com.gestao.back.model.entities.MovimentoEstoque;
 import com.gestao.back.model.entities.Produto;
 import com.gestao.back.model.entities.Usuario;
 import com.gestao.back.model.enums.TipoMovimento;
+import com.gestao.back.model.repositories.ItemVendaRepository;
 import com.gestao.back.model.repositories.MovimentoEstoqueRepository;
 import com.gestao.back.model.repositories.ProdutoRepository;
 import com.gestao.back.model.repositories.UsuarioRepository;
@@ -29,6 +31,9 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class ProdutoServiceImpl {
+
+    @Autowired
+    private ItemVendaRepository itemVendaRepository;
 
     @Autowired
     private ProdutoRepository produtoRepository;
@@ -105,16 +110,23 @@ public class ProdutoServiceImpl {
 
     @Transactional
     public void deletarProduto(Long id) {
-        if(!produtoRepository.getReferenceById(id).isAtivo()) {
-            throw new IllegalArgumentException("Produto precisa estar desativado para ser deletado");
-        }
-        if (!produtoRepository.existsById(id)) {
-            throw new EntityNotFoundException("Produto não encontrado");
-        }
-        if(produtoRepository.getReferenceById(id).getQuantidadeEstoque() != 0){
+        Produto produto = produtoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Produto não encontrado"));
+        if (produto.getQuantidadeEstoque() != 0) {
             throw new IllegalArgumentException("Produto não pode ser deletado pois esta em estoque");
         }
-        produtoRepository.deleteById(id);
+        List<ItemVenda> itensVenda = itemVendaRepository.findAllByProdutoId(id);
+        for (ItemVenda item : itensVenda) {
+            item.setProduto(null);
+            itemVendaRepository.save(item);
+        }
+
+        List<MovimentoEstoque> movimentos = movimentoEstoqueRepository.findAllByProdutoId(id);
+        for (MovimentoEstoque movimento : movimentos) {
+            movimento.setProduto(null);
+            movimentoEstoqueRepository.save(movimento);
+        }
+        produtoRepository.delete(produto);
     }
 
     @Transactional
@@ -153,6 +165,7 @@ public class ProdutoServiceImpl {
         movimento.setTipo(tipo);
         movimento.setQuantidade(quantidadeMovimentada);
         movimento.setData(LocalDateTime.now());
+        movimento.setNomeProdutoSnapshot(produto.getNome());
         movimento.setMotivo(verificaMotivo(dto.getTipo(),dto.getMotivo(), dto.getQuantidade()));
         movimentoEstoqueRepository.save(movimento);
 

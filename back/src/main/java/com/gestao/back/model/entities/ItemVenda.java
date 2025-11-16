@@ -31,11 +31,14 @@ public class ItemVenda {
     private Venda venda;
 
     @ManyToOne
-    @JoinColumn(name = "produto_id", nullable = false)
+    @JoinColumn(name = "produto_id", nullable = true)
     private Produto produto;
 
     @Column(nullable = false)
     private Integer quantidade;
+
+    @Column(name = "nome_produto_snapshot", nullable = false)
+    private String nomeProdutoSnapshot;
 
     @Column(nullable = false)
     private BigDecimal precoUnitario;
@@ -80,4 +83,11 @@ public class ItemVenda {
         this.precoUnitario = precoUnitario;
     }
 
+    public String getNomeProdutoSnapshot() {
+        return nomeProdutoSnapshot;
+    }
+
+    public void setNomeProdutoSnapshot(String nomeProdutoSnapshot) {
+        this.nomeProdutoSnapshot = nomeProdutoSnapshot;
+    }
 }

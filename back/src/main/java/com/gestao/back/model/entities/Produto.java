@@ -45,11 +45,10 @@ public class Produto {
 
     @OneToMany(
             mappedBy = "produto",
-            cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY,
-            orphanRemoval = true
+            fetch = FetchType.LAZY
     )
     private Set<MovimentoEstoque> movimentos = new HashSet<>();
+
 
     public Produto() {
 

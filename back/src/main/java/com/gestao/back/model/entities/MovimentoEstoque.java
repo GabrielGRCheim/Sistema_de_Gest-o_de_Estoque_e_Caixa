@@ -16,7 +16,7 @@ public class MovimentoEstoque {
     private int quantidade;
 
     @ManyToOne
-    @JoinColumn(name = "produto_id", nullable = false)
+    @JoinColumn(name = "produto_id", nullable = true)
     private Produto produto;
 
     @Enumerated(EnumType.STRING)
@@ -26,6 +26,9 @@ public class MovimentoEstoque {
     @Column(nullable = false)
     private LocalDateTime data;
 
+    @Column(name = "nome_produto_snapshot", nullable = false)
+    private String nomeProdutoSnapshot;
+
     private String Motivo;
 
     @ManyToOne
@@ -34,12 +37,13 @@ public class MovimentoEstoque {
 
 
 
-    public MovimentoEstoque(Long id, int quantidade, Produto produto, TipoMovimento tipo, LocalDateTime data, String motivo, Usuario usuarioId) {
+    public MovimentoEstoque(Long id, int quantidade, Produto produto, TipoMovimento tipo, LocalDateTime data,String nomeProdutoSnapshot, String motivo, Usuario usuarioId) {
         this.id = id;
         this.quantidade = quantidade;
         this.produto = produto;
         this.tipo = tipo;
         this.data = data;
+        this.nomeProdutoSnapshot = nomeProdutoSnapshot;
         Motivo = motivo;
         this.usuario = usuarioId;
     }
@@ -103,6 +107,14 @@ public class MovimentoEstoque {
 
     public void setMotivo(String motivo) {
         Motivo = motivo;
+    }
+
+    public String getNomeProdutoSnapshot() {
+        return nomeProdutoSnapshot;
+    }
+
+    public void setNomeProdutoSnapshot(String nomeProdutoSnapshot) {
+        this.nomeProdutoSnapshot = nomeProdutoSnapshot;
     }
 }
 
