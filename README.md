@@ -20,73 +20,78 @@ A aplicação fornece APIs REST para gerenciamento de produtos, usuários, venda
 ---
 
 ## 📁 Estrutura do Projeto
-
+```txt
 src/main/java/com/gestao/back/
-|
-|   Back.java
-|
-+---controllers
-|       AuthController.java
-|       ProdutoController.java
-|       UsuarioController.java
-|       VendaController.java
-|
-+---dto
-|       ErroDTO.java
-|       ItemVendaRequestDTO.java
-|       ItemVendaResponseDTO.java
-|       LoginRequestDTO.java
-|       MovimentoEstoqueRequestDTO.java
-|       ProdutoRequestDTO.java
-|       ProdutoResponseDTO.java
-|       UsuarioRequestDTO.java
-|       UsuarioResponseDTO.java
-|       VendaRequestDTO.java
-|       VendaResponseDTO.java
-|
-+---model
-|   +---config
-|   |       WebConfig.java
-|   |
-|   +---context
-|   |       UsuarioContext.java
-|   |
-|   +---entities
-|   |       Auditoria.java
-|   |       ItemVenda.java
-|   |       MovimentoEstoque.java
-|   |       Produto.java
-|   |       Usuario.java
-|   |       Venda.java
-|   |
-|   +---enums
-|   |       Perfil.java
-|   |       TipoMovimento.java
-|   |
-|   +---exceptions
-|   |       BadRequestException.java
-|   |       BusinessException.java
-|   |       ConflictException.java
-|   |       ForbiddenException.java
-|   |       GlobalExceptionHandler.java
-|   |       NotFoundException.java
-|   |
-|   +---interceptors
-|   |       UsuarioInterceptor.java
-|   |
-|   \---repositories
-|           AuditoriaRepository.java
-|           ItemVendaRepository.java
-|           MovimentoEstoqueRepository.java
-|           ProdutoRepository.java
-|           UsuarioRepository.java
-|           VendaRepository.java
-|
-\---service
-        AuditoriaService.java
-        ProdutoServiceImpl.java
-        UsuarioServiceImpl.java
-        VendaServiceImpl.java
+│
+├── Back.java
+│
+├── controllers/
+│   ├── AuthController.java
+│   ├── ProdutoController.java
+│   ├── UsuarioController.java
+│   └── VendaController.java
+│
+├── dto/
+│   ├── ErroDTO.java
+│   ├── ItemVendaRequestDTO.java
+│   ├── ItemVendaResponseDTO.java
+│   ├── LoginRequestDTO.java
+│   ├── MovimentoEstoqueRequestDTO.java
+│   ├── ProdutoRequestDTO.java
+│   ├── ProdutoResponseDTO.java
+│   ├── UsuarioRequestDTO.java
+│   ├── UsuarioResponseDTO.java
+│   ├── VendaRequestDTO.java
+│   └── VendaResponseDTO.java
+│
+├── model/
+│   │
+│   ├── config/
+│   │   └── WebConfig.java
+│   │
+│   ├── context/
+│   │   └── UsuarioContext.java
+│   │
+│   ├── entities/
+│   │   ├── Auditoria.java
+│   │   ├── ItemVenda.java
+│   │   ├── MovimentoEstoque.java
+│   │   ├── Produto.java
+│   │   ├── Usuario.java
+│   │   └── Venda.java
+│   │
+│   ├── enums/
+│   │   ├── Perfil.java
+│   │   └── TipoMovimento.java
+│   │
+│   ├── exceptions/
+│   │   ├── BadRequestException.java
+│   │   ├── BusinessException.java
+│   │   ├── ConflictException.java
+│   │   ├── ForbiddenException.java
+│   │   ├── GlobalExceptionHandler.java
+│   │   └── NotFoundException.java
+│   │
+│   └── interceptors/
+│       └── UsuarioInterceptor.java
+│
+├── repositories/
+│   ├── AuditoriaRepository.java
+│   ├── ItemVendaRepository.java
+│   ├── MovimentoEstoqueRepository.java
+│   ├── ProdutoRepository.java
+│   ├── UsuarioRepository.java
+│   └── VendaRepository.java
+│
+└── service/
+    ├── AuditoriaService.java
+    ├── ProdutoServiceImpl.java
+    ├── UsuarioServiceImpl.java
+    └── VendaServiceImpl.java
+
+```
+
+
 
 ---
 
@@ -94,13 +99,21 @@ src/main/java/com/gestao/back/
 
 ### ✔ 1. Clonar o repositório
 git clone https://github.com/GabrielGRCheim/Sistema_de_Gest-o_de_Estoque_e_Caixa.git
+
 cd back/src/main/java/com/gestao/back/
+
 executar arquivo Back.java
+
 ## ✔ 2. Rodar via Maven
+
 mvn spring-boot:run
+
 ## ✔ 3. Acessar o H2 Console
+
 http://localhost:8080/h2-console
+
 JDBC URL: jdbc:h2:file:./data/db-api;DB_CLOSE_ON_EXIT=FALSE
+
 jdbc:h2:file:./data/db-api
 
 ---
@@ -108,54 +121,93 @@ jdbc:h2:file:./data/db-api
 ## 🛠 Funcionalidades
 
 # 🧑‍💼 Gestão de Usuários
+
 Cadastro de usuário
+
 Login
+
 Controle de ativo/inativo
+
 Identificação automática do usuário nas auditorias
 
 # 📦 Gestão de Produtos
+
 Criar, listar, editar e excluir produtos
+
 Validações:
+
 Código único
+
 Preço não negativo
+
 Estoque não negativo
+
 Desativação antes de permitir exclusão
+
 Registro automático de auditorias
 
 # 🔄 Movimentação de Estoque
+
 Entrada
+
 Ajuste positivo/negativo
+
 Validação de quantidade
+
 Bloqueio para evitar estoque negativo
+
 Registro do usuário responsável
+
 Registro de motivo da movimentação
 
 # 🧾 Vendas
+
 Registrar venda
+
 Itens de venda vinculados ao produto
+
 Atualização automática do estoque
+
 Validações de quantidade disponível
+
 Auditoria completa (antes/depois)
 
 # 📝 Auditoria (LOG Completo)
+
 Auditamos automaticamente:
+
 Quem realizou a ação (via cabeçalho X-Usuario)
+
 O que foi alterado
+
 Estado antes e depois
+
 Data/Hora
+
 Operação: CREATE, UPDATE, DELETE
-Como funciona:
+
+# Como funciona:
+
 O Angular envia em todas as requisições o cabeçalho:
+
 X-Usuario: "Todas as informações do Usuario"
+
 O Interceptor do Spring captura esse valor:
+
 Armazena no ThreadLocal → UsuarioContext
+
 O AuditoriaService salva tudo automaticamente no banco.
 
 # 🔐 Tratamento Global de Exceções
+
 O projeto utiliza um @RestControllerAdvice global com classes genéricas:
+
 BadRequestException → 400
+
 NotFoundException → 404
+
 ConflictException → 409
+
 ForbiddenException → 403
 
 ---
@@ -273,6 +325,7 @@ Corpo da requisição: JSON contendo os produtos e quantidades.
 
 ## 🧪 Banco H2 (Dados de Teste)
 O back-end utiliza um script SQL automático para:
+
 Inserir usuários iniciais
 
 # Exemplo da criação de tabelas e valores ja registrados:
