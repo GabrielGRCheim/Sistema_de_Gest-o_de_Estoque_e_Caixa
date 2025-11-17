@@ -21,9 +21,7 @@ public class ItemVendaResponseDTO {
     }
 
     public ItemVendaResponseDTO(ItemVenda itemVenda) {
-        if (itemVenda.getProduto() != null) {
-            this.nomeProduto = itemVenda.getProduto().getNome();
-        }
+        this.nomeProduto = itemVenda.getNomeProdutoSnapshot(); //nova linha
         this.quantidade = itemVenda.getQuantidade();
         this.precoUnitario = itemVenda.getPrecoUnitario();
     }
