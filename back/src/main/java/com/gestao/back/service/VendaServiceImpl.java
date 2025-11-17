@@ -13,6 +13,8 @@ import com.gestao.back.model.entities.Produto;
 import com.gestao.back.model.entities.Usuario;
 import com.gestao.back.model.entities.Venda;
 import com.gestao.back.model.enums.TipoMovimento;
+import com.gestao.back.model.exceptions.BadRequestException;
+import com.gestao.back.model.exceptions.NotFoundException;
 import com.gestao.back.model.repositories.MovimentoEstoqueRepository;
 import com.gestao.back.model.repositories.ProdutoRepository;
 import com.gestao.back.model.repositories.UsuarioRepository;
@@ -55,11 +57,11 @@ public class VendaServiceImpl {
     public VendaResponseDTO registrarVenda(VendaRequestDTO dto) {
 
         Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
-                .orElseThrow(() -> new EntityNotFoundException("Usuário (Operador) não encontrado"));
+                .orElseThrow(() -> new NotFoundException("Usuário (Operador) não encontrado"));
 
         BigDecimal troco = dto.getValorRecebido().subtract(dto.getTotal());
         if (troco.compareTo(BigDecimal.ZERO) < 0) {
-             throw new IllegalArgumentException("Valor recebido é menor que o total da venda.");
+             throw new BadRequestException("Valor recebido é menor que o total da venda.");
         }
 
         Venda venda = new Venda();
@@ -77,14 +79,14 @@ public class VendaServiceImpl {
         for (ItemVendaRequestDTO itemDto : dto.getItens()) {
             
             Produto produto = produtoRepository.findById(itemDto.getProdutoId())
-                    .orElseThrow(() -> new EntityNotFoundException("Produto não encontrado: ID " + itemDto.getProdutoId()));
+                    .orElseThrow(() -> new NotFoundException("Produto não encontrado: ID " + itemDto.getProdutoId()));
 
             if (produto.getQuantidadeEstoque() < itemDto.getQuantidade()) {
-                throw new RuntimeException("Estoque insuficiente para o produto: " + produto.getNome());
+                throw new BadRequestException("Estoque insuficiente para o produto: " + produto.getNome());
             }
 
             if (!produto.isAtivo()) {
-                throw new RuntimeException("Produto inativo não pode ser vendido: " + produto.getNome());
+                throw new BadRequestException("Produto inativo não pode ser vendido: " + produto.getNome());
             }
 
             int novoEstoque = produto.getQuantidadeEstoque() - itemDto.getQuantidade();

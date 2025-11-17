@@ -7,6 +7,9 @@ package com.gestao.back.service;
 import com.gestao.back.dto.UsuarioRequestDTO;
 import com.gestao.back.dto.UsuarioResponseDTO;
 import com.gestao.back.model.entities.Usuario;
+import com.gestao.back.model.exceptions.BadRequestException;
+import com.gestao.back.model.exceptions.ConflictException;
+import com.gestao.back.model.exceptions.NotFoundException;
 import com.gestao.back.model.repositories.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,21 +43,21 @@ public class UsuarioServiceImpl {
     @Transactional(readOnly = true)
     public UsuarioResponseDTO buscarPorId(Long id) {
         Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
+                .orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
         return new UsuarioResponseDTO(usuario);
     }
     
     @Transactional(readOnly = true)
     public UsuarioResponseDTO login(LoginRequestDTO dto) {
         Usuario usuario = usuarioRepository.findByEmail(dto.getEmail())
-                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado para o e-mail: " + dto.getEmail()));
+                .orElseThrow(() -> new NotFoundException("Usuário não encontrado para o e-mail: " + dto.getEmail()));
 
         if (!usuario.getAtivo()) {
-            throw new RuntimeException("Usuário está inativo"); 
+            throw new BadRequestException("Usuário está inativo");
         }
         
         if (!dto.getSenha().equals(usuario.getSenha())) {
-            throw new RuntimeException("Senha inválida");
+            throw new BadRequestException("Senha inválida");
         }
         return new UsuarioResponseDTO(usuario);
     }
@@ -62,7 +65,7 @@ public class UsuarioServiceImpl {
     @Transactional
     public UsuarioResponseDTO criarUsuario(UsuarioRequestDTO dto) {
         if (usuarioRepository.findByEmail(dto.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("E-mail já cadastrado"); 
+            throw new ConflictException("E-mail já cadastrado");
         }
 
         Usuario novoUsuario = new Usuario();
@@ -82,11 +85,11 @@ public class UsuarioServiceImpl {
     @Transactional
     public UsuarioResponseDTO atualizarUsuario(Long id, UsuarioRequestDTO dto) {
         Usuario usuarioExistente = usuarioRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
+                .orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
 
         usuarioRepository.findByEmail(dto.getEmail()).ifPresent(usuarioComEmail -> {
             if (!usuarioComEmail.getId().equals(id)) {
-                throw new IllegalArgumentException("E-mail já cadastrado para outro usuário");
+                throw new ConflictException("E-mail já cadastrado para outro usuário");
             }
         });
 
@@ -111,7 +114,7 @@ public class UsuarioServiceImpl {
     @Transactional
     public void deletarUsuario(Long id) {
         if (!usuarioRepository.existsById(id)) {
-            throw new EntityNotFoundException("Usuário não encontrado");
+            throw new NotFoundException("Usuário não encontrado");
         }
         auditoriaService.registrar("usuarios","UPDATE",cloneUsuario(usuarioRepository.getReferenceById(id)),null,id);
         usuarioRepository.deleteById(id);
