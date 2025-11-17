@@ -12,11 +12,13 @@ import com.gestao.back.model.entities.MovimentoEstoque;
 import com.gestao.back.model.entities.Produto;
 import com.gestao.back.model.entities.Usuario;
 import com.gestao.back.model.enums.TipoMovimento;
+import com.gestao.back.model.exceptions.BadRequestException;
+import com.gestao.back.model.exceptions.ConflictException;
+import com.gestao.back.model.exceptions.NotFoundException;
 import com.gestao.back.model.repositories.ItemVendaRepository;
 import com.gestao.back.model.repositories.MovimentoEstoqueRepository;
 import com.gestao.back.model.repositories.ProdutoRepository;
 import com.gestao.back.model.repositories.UsuarioRepository;
-import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -44,6 +46,9 @@ public class ProdutoServiceImpl {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @Autowired
+    private AuditoriaService auditoriaService;
+
     @Transactional(readOnly = true)
     public List<ProdutoResponseDTO> listarTodos(Boolean ativo) {
         List<Produto> produtos;
@@ -60,20 +65,20 @@ public class ProdutoServiceImpl {
     @Transactional(readOnly = true)
     public ProdutoResponseDTO buscarPorId(Long id) {
         Produto produto = produtoRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Produto não encontrado"));
+                .orElseThrow(() -> new NotFoundException("Produto não encontrado"));
         return new ProdutoResponseDTO(produto);
     }
 
     @Transactional
     public ProdutoResponseDTO criarProduto(ProdutoRequestDTO dto) {
         if (produtoRepository.findByCodigo(dto.getCodigo()).isPresent()) {
-            throw new IllegalArgumentException("Código já cadastrado");
+            throw new ConflictException("Código já cadastrado");
         }
         if (dto.getPrecoUnitario().compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("Preço unitário não pode ser negativo");
+            throw new BadRequestException("Preço unitario não pode ser negativo");
         }
         if (dto.getQuantidadeEstoque() < 0) {
-            throw new IllegalArgumentException("Estoque inicial não pode ser negativo");
+            throw new BadRequestException("Quantidade não pode ser negativa");
         }
 
         Produto produto = new Produto();
@@ -86,17 +91,21 @@ public class ProdutoServiceImpl {
 
         Produto produtoSalvo = produtoRepository.save(produto);
 
+        auditoriaService.registrar("Produtos","CREATE",null,produtoSalvo,produtoSalvo.getId());
+
         return new ProdutoResponseDTO(produtoSalvo);
     }
 
     @Transactional
     public ProdutoResponseDTO atualizarProduto(Long id, ProdutoRequestDTO dto) {
         Produto produto = produtoRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Produto não encontrado"));
+                .orElseThrow(() -> new NotFoundException("Produto não encontrado"));
 
         if (dto.getPrecoUnitario().compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("Preço unitário não pode ser negativo");
+            throw new BadRequestException("Preço unitario não pode ser negativo");
         }
+
+        Produto produtoAntes = cloneProduto(produtoRepository.getReferenceById(id));
 
         produto.setCodigo(dto.getCodigo());
         produto.setNome(dto.getNome());
@@ -105,16 +114,24 @@ public class ProdutoServiceImpl {
         produto.setAtivo(dto.isAtivo());
 
         Produto produtoAtualizado = produtoRepository.save(produto);
+
+        auditoriaService.registrar("Produtos","UPDATE",produtoAntes,produtoAtualizado,id);
+
         return new ProdutoResponseDTO(produtoAtualizado);
     }
 
     @Transactional
     public void deletarProduto(Long id) {
         Produto produto = produtoRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Produto não encontrado"));
+                .orElseThrow(() -> new NotFoundException("Produto não encontrado"));
         if (produto.getQuantidadeEstoque() != 0) {
-            throw new IllegalArgumentException("Produto não pode ser deletado pois esta em estoque");
+            throw new ConflictException("Produto não pode ser deletado pois esta em estoque");
         }
+
+        if(!produtoRepository.getReferenceById(id).isAtivo()) {
+            throw new BadRequestException("Produto precisa estar desativado para ser deletado");
+        }
+        
         List<ItemVenda> itensVenda = itemVendaRepository.findAllByProdutoId(id);
         for (ItemVenda item : itensVenda) {
             item.setProduto(null);
@@ -126,6 +143,11 @@ public class ProdutoServiceImpl {
             movimento.setProduto(null);
             movimentoEstoqueRepository.save(movimento);
         }
+
+        Produto produtoAntes = cloneProduto(produtoRepository.getReferenceById(id));
+
+        auditoriaService.registrar("Produtos","DELETE",produtoAntes,null,id);
+
         produtoRepository.delete(produto);
     }
 
@@ -133,23 +155,23 @@ public class ProdutoServiceImpl {
     public ProdutoResponseDTO movimentarEstoque(Long idProduto, MovimentoEstoqueRequestDTO dto) {
 
         Produto produto = produtoRepository.findById(idProduto)
-                .orElseThrow(() -> new EntityNotFoundException("Produto não encontrado (ID: " + idProduto + ")"));
+                .orElseThrow(() -> new NotFoundException("Produto não encontrado (ID: " + idProduto + ")"));
 
         Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
-                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado (ID: " + dto.getUsuarioId() + ")"));
+                .orElseThrow(() -> new NotFoundException("Usuário não encontrado (ID: " + dto.getUsuarioId() + ")"));
 
         TipoMovimento tipo = dto.getTipo();
         int quantidadeMovimentada = dto.getQuantidade();
 
         if (!tipo.equals(TipoMovimento.ENTRADA) && !tipo.equals(TipoMovimento.AJUSTE)) {
-            throw new IllegalArgumentException("Tipo de movimento inválido. Use 'ENTRADA' ou 'AJUSTE'.");
+            throw new BadRequestException("Tipo de movimento inválido. Use 'ENTRADA' ou 'AJUSTE'.");
         }
 
         if (tipo.equals(TipoMovimento.ENTRADA) && quantidadeMovimentada <= 0) {
-            throw new IllegalArgumentException("Para ENTRADA, a quantidade deve ser positiva.");
+            throw new BadRequestException("Para ENTRADA, a quantidade deve ser positiva.");
         }
         if (quantidadeMovimentada == 0) {
-            throw new IllegalArgumentException("A quantidade da movimentação não pode ser zero.");
+            throw new BadRequestException("A quantidade da movimentação não pode ser zero.");
         }
 
         int estoqueAtual = produto.getQuantidadeEstoque();
@@ -165,8 +187,8 @@ public class ProdutoServiceImpl {
         movimento.setTipo(tipo);
         movimento.setQuantidade(quantidadeMovimentada);
         movimento.setData(LocalDateTime.now());
-        movimento.setNomeProdutoSnapshot(produto.getNome());
         movimento.setMotivo(verificaMotivo(dto.getTipo(),dto.getMotivo(), dto.getQuantidade()));
+        movimento.setNomeProdutoSnapshot(produto.getNome());
         movimentoEstoqueRepository.save(movimento);
 
         produto.setQuantidadeEstoque(novoEstoque);
@@ -176,7 +198,7 @@ public class ProdutoServiceImpl {
     }
 
     public String verificaMotivo(TipoMovimento tipoMovimento, String motivo, int quantidade) {
-        if(motivo.isBlank()){
+        if(motivo == null) {
             switch (tipoMovimento) {
                 case ENTRADA:
                     return "Reposição de estoque ";
@@ -191,5 +213,17 @@ public class ProdutoServiceImpl {
         }
         return motivo;
 
+    }
+
+    private Produto cloneProduto(Produto origem) {
+        Produto clone = new Produto();
+        clone.setId(origem.getId());
+        clone.setCodigo(origem.getCodigo());
+        clone.setNome(origem.getNome());
+        clone.setCategoria(origem.getCategoria());
+        clone.setQuantidadeEstoque(origem.getQuantidadeEstoque());
+        clone.setPrecoUnitario(origem.getPrecoUnitario());
+        clone.setAtivo(origem.isAtivo());
+        return clone;
     }
 }

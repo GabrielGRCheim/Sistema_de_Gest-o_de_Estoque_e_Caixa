@@ -37,8 +37,7 @@ public class MovimentoEstoque {
 
 
 
-    public MovimentoEstoque(Long id, int quantidade, Produto produto, TipoMovimento tipo, LocalDateTime data,String nomeProdutoSnapshot, String motivo, Usuario usuarioId) {
-        this.id = id;
+    public MovimentoEstoque(int quantidade, Produto produto, TipoMovimento tipo, LocalDateTime data,String nomeProdutoSnapshot, String motivo, Usuario usuarioId) {
         this.quantidade = quantidade;
         this.produto = produto;
         this.tipo = tipo;

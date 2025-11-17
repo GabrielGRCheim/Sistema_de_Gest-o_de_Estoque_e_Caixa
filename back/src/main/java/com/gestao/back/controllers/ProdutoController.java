@@ -29,11 +29,6 @@ public class ProdutoController {
         return ResponseEntity.ok(produtoService.listarTodos(ativo));
     }
 
-//    @GetMapping
-//    public ResponseEntity<List<ProdutoResponseDTO>> listarTodos() {
-//        return ResponseEntity.ok(produtoService.listarTodos());
-//    }
-
     @GetMapping("/{id}")
     public ResponseEntity<ProdutoResponseDTO> buscarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(produtoService.buscarPorId(id));
