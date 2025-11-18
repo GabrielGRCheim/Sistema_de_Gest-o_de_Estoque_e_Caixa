@@ -9,7 +9,8 @@ import java.time.LocalDateTime;
 public class MovimentoEstoque {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY
+    )
     private Long id;
 
     @Column(nullable = false)
@@ -26,8 +27,8 @@ public class MovimentoEstoque {
     @Column(nullable = false)
     private LocalDateTime data;
 
-    @Column(name = "nome_produto_snapshot", nullable = false)
-    private String nomeProdutoSnapshot;
+    @Column(name = "nome_produto", nullable = false)
+    private String nomeProduto;
 
     private String Motivo;
 
@@ -37,12 +38,12 @@ public class MovimentoEstoque {
 
 
 
-    public MovimentoEstoque(int quantidade, Produto produto, TipoMovimento tipo, LocalDateTime data,String nomeProdutoSnapshot, String motivo, Usuario usuarioId) {
+    public MovimentoEstoque(int quantidade, Produto produto, TipoMovimento tipo, LocalDateTime data,String nomeProduto, String motivo, Usuario usuarioId) {
         this.quantidade = quantidade;
         this.produto = produto;
         this.tipo = tipo;
         this.data = data;
-        this.nomeProdutoSnapshot = nomeProdutoSnapshot;
+        this.nomeProduto = nomeProduto;
         Motivo = motivo;
         this.usuario = usuarioId;
     }
@@ -108,12 +109,12 @@ public class MovimentoEstoque {
         Motivo = motivo;
     }
 
-    public String getNomeProdutoSnapshot() {
-        return nomeProdutoSnapshot;
+    public String getNomeProduto() {
+        return nomeProduto;
     }
 
-    public void setNomeProdutoSnapshot(String nomeProdutoSnapshot) {
-        this.nomeProdutoSnapshot = nomeProdutoSnapshot;
+    public void setNomeProduto(String nomeProduto) {
+        this.nomeProduto = nomeProduto;
     }
 }
 

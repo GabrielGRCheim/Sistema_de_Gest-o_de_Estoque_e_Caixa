@@ -21,47 +21,47 @@ MERGE INTO vendas (id, data_venda, total, troco, valor_recebido, usuario_id) VAL
 (4, '2025-11-08 09:15:12.445877', 360.99, 39.01, 400.00, 1),
 (5, '2025-11-08 18:04:33.716542', 128.00, 2.00, 130.00, 2);
 
-MERGE INTO itens_venda (id, preco_unitario, quantidade, nome_produto_snapshot, produto_id, venda_id) VALUES
-(1, 29.90, 2, 'TESTE', 1, 2),
-(2, 35.00, 1, 'TESTE',10, 2),
-(3, 20.31, 1, 'TESTE',7, 2),
-(4, 95.00, 2, 'TESTE',7, 7),
-(5, 35.00, 1, 'TESTE',10, 7),
-(6, 15.00, 1, 'TESTE',1, 7),
-(7, 29.90, 1, 'TESTE',1, 3),
-(8, 35.00, 1, 'TESTE',10, 3),
-(9, 24.60, 1, 'TESTE',7, 3),
-(10, 250.00, 1, 'TESTE',5, 4),
-(11, 95.00, 1, 'TESTE',7, 4),
-(12, 15.99, 1, 'TESTE',1, 4),
-(13, 95.00, 1, 'TESTE',7, 5),
-(14, 33.00, 1, 'TESTE',10, 5);
+MERGE INTO itens_venda (id, preco_unitario, quantidade, nome_produto, produto_id, venda_id) VALUES
+(1, 29.90, 2, 'Filtro de Óleo', 1, 2),
+(2, 35.00, 1, 'Lâmpada LED H7',10, 2),
+(3, 20.31, 1, 'Pastilha de Freio',7, 2),
+(4, 95.00, 2, 'Pastilha de Freio',7, 7),
+(5, 35.00, 1, 'Lâmpada LED H7',10, 7),
+(6, 15.00, 1, 'Filtro de Óleo',1, 7),
+(7, 29.90, 1, 'Filtro de Óleo',1, 3),
+(8, 35.00, 1, 'Lâmpada LED H7',10, 3),
+(9, 24.60, 1, 'Pastilha de Freio',7, 3),
+(10, 250.00, 1, 'Amortecedor Dianteiro',5, 4),
+(11, 95.00, 1, 'Pastilha de Freio',7, 4),
+(12, 15.99, 1, 'Filtro de Óleo',1, 4),
+(13, 95.00, 1, 'Pastilha de Freio',7, 5),
+(14, 33.00, 1, 'Lâmpada LED H7',10, 5);
 
 
-MERGE INTO movimentos_estoque (id, motivo, data, quantidade, tipo, nome_produto_snapshot, produto_id, usuario_id) VALUES
+MERGE INTO movimentos_estoque (id, motivo, data, quantidade, tipo, nome_produto, produto_id, usuario_id) VALUES
 -- VENDA 2
-(2, 'Venda ID: 2', '2025-11-06 13:36:03', -2, 'SAIDA_VENDA', 'TESTE', 1, 2),
-(3, 'Venda ID: 2', '2025-11-06 13:36:03', -1, 'SAIDA_VENDA', 'TESTE',10, 2),
-(4, 'Venda ID: 2', '2025-11-06 13:36:03', -1, 'SAIDA_VENDA', 'TESTE',7, 2),
+(2, 'Venda ID: 2', '2025-11-06 13:36:03', -2, 'SAIDA_VENDA', 'Filtro de Óleo', 1, 2),
+(3, 'Venda ID: 2', '2025-11-06 13:36:03', -1, 'SAIDA_VENDA', 'Lâmpada LED H7',10, 2),
+(4, 'Venda ID: 2', '2025-11-06 13:36:03', -1, 'SAIDA_VENDA', 'Pastilha de Freio',7, 2),
 
 -- VENDA 7
-(5, 'Venda ID: 7', '2025-11-07 10:21:15', -2, 'SAIDA_VENDA', 'TESTE',7, 2),
-(6, 'Venda ID: 7', '2025-11-07 10:21:15', -1, 'SAIDA_VENDA', 'TESTE',10, 2),
-(7, 'Venda ID: 7', '2025-11-07 10:21:15', -1, 'SAIDA_VENDA', 'TESTE',1, 2),
+(5, 'Venda ID: 7', '2025-11-07 10:21:15', -2, 'SAIDA_VENDA', 'Pastilha de Freio',7, 2),
+(6, 'Venda ID: 7', '2025-11-07 10:21:15', -1, 'SAIDA_VENDA', 'Lâmpada LED H7',10, 2),
+(7, 'Venda ID: 7', '2025-11-07 10:21:15', -1, 'SAIDA_VENDA', 'Filtro de Óleo',1, 2),
 
 -- VENDA 3
-(8, 'Venda ID: 3', '2025-11-07 17:45:54', -1, 'SAIDA_VENDA', 'TESTE',1, 2),
-(9, 'Venda ID: 3', '2025-11-07 17:45:54', -1, 'SAIDA_VENDA', 'TESTE',10, 2),
-(10, 'Venda ID: 3', '2025-11-07 17:45:54', -1, 'SAIDA_VENDA', 'TESTE',7, 2),
+(8, 'Venda ID: 3', '2025-11-07 17:45:54', -1, 'SAIDA_VENDA', 'Filtro de Óleo',1, 2),
+(9, 'Venda ID: 3', '2025-11-07 17:45:54', -1, 'SAIDA_VENDA', 'Lâmpada LED H7',10, 2),
+(10, 'Venda ID: 3', '2025-11-07 17:45:54', -1, 'SAIDA_VENDA', 'Pastilha de Freio',7, 2),
 
 -- VENDA 4
-(11, 'Venda ID: 4', '2025-11-08 09:15:12', -1, 'SAIDA_VENDA', 'TESTE',5, 2),
-(12, 'Venda ID: 4', '2025-11-08 09:15:12', -1, 'SAIDA_VENDA', 'TESTE',7, 2),
-(13, 'Venda ID: 4', '2025-11-08 09:15:12', -1, 'SAIDA_VENDA', 'TESTE',1, 2),
+(11, 'Venda ID: 4', '2025-11-08 09:15:12', -1, 'SAIDA_VENDA', 'Amortecedor Dianteiro',5, 2),
+(12, 'Venda ID: 4', '2025-11-08 09:15:12', -1, 'SAIDA_VENDA', 'Pastilha de Freio',7, 2),
+(13, 'Venda ID: 4', '2025-11-08 09:15:12', -1, 'SAIDA_VENDA', 'Filtro de Óleo',1, 2),
 
 -- VENDA 5
-(14, 'Venda ID: 5', '2025-11-08 18:04:33', -1, 'SAIDA_VENDA', 'TESTE',7, 2),
-(15, 'Venda ID: 5', '2025-11-08 18:04:33', -1, 'SAIDA_VENDA', 'TESTE',10, 2);
+(14, 'Venda ID: 5', '2025-11-08 18:04:33', -1, 'SAIDA_VENDA', 'Pastilha de Freio',7, 2),
+(15, 'Venda ID: 5', '2025-11-08 18:04:33', -1, 'SAIDA_VENDA', 'Lâmpada LED H7',10, 2);
 
 -- -- PRODUTOS (último ID = 10)
 -- ALTER TABLE PRODUTOS
