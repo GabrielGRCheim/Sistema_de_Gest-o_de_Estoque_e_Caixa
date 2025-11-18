@@ -188,7 +188,7 @@ public class ProdutoServiceImpl {
         movimento.setQuantidade(quantidadeMovimentada);
         movimento.setData(LocalDateTime.now());
         movimento.setMotivo(verificaMotivo(dto.getTipo(),dto.getMotivo(), dto.getQuantidade()));
-        movimento.setNomeProdutoSnapshot(produto.getNome());
+        movimento.setNomeProduto(produto.getNome());
         movimentoEstoqueRepository.save(movimento);
 
         produto.setQuantidadeEstoque(novoEstoque);

@@ -16,21 +16,14 @@ import java.math.BigDecimal;
  */
 public class ProdutoRequestDTO {
 
-    @NotBlank(message = "Código é obrigatório")
     private String codigo;
 
-    @NotBlank(message = "Nome é obrigatório")
     private String nome;
 
-    @NotBlank(message = "Categoria é obrigatória")
     private String categoria;
 
-    @NotNull(message = "Quantidade em estoque é obrigatória")
-    @Min(value = 0, message = "Estoque não pode ser negativo")
     private Integer quantidadeEstoque;
 
-    @NotNull(message = "Preço unitário é obrigatório")
-    @DecimalMin(value = "0.0", inclusive = true, message = "Preço não pode ser negativo")
     private BigDecimal precoUnitario;
 
     private boolean ativo;
