@@ -37,8 +37,8 @@ public class ItemVenda {
     @Column(nullable = false)
     private Integer quantidade;
 
-    @Column(name = "nome_produto_snapshot", nullable = false)
-    private String nomeProdutoSnapshot;
+    @Column(name = "nome_produto", nullable = false)
+    private String nomeProduto;
 
     @Column(nullable = false)
     private BigDecimal precoUnitario;
@@ -83,11 +83,11 @@ public class ItemVenda {
         this.precoUnitario = precoUnitario;
     }
 
-    public String getNomeProdutoSnapshot() {
-        return nomeProdutoSnapshot;
+    public String getNomeProduto() {
+        return nomeProduto;
     }
 
-    public void setNomeProdutoSnapshot(String nomeProdutoSnapshot) {
-        this.nomeProdutoSnapshot = nomeProdutoSnapshot;
+    public void setNomeProduto(String nomeProduto) {
+        this.nomeProduto = nomeProduto;
     }
 }

@@ -19,7 +19,7 @@ import com.gestao.back.model.repositories.MovimentoEstoqueRepository;
 import com.gestao.back.model.repositories.ProdutoRepository;
 import com.gestao.back.model.repositories.UsuarioRepository;
 import com.gestao.back.model.repositories.VendaRepository;
-import jakarta.persistence.EntityNotFoundException;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -97,7 +97,7 @@ public class VendaServiceImpl {
             itemVenda.setProduto(produto);
             itemVenda.setQuantidade(itemDto.getQuantidade());
             itemVenda.setPrecoUnitario(itemDto.getPrecoUnitario());
-            itemVenda.setNomeProdutoSnapshot(produto.getNome());
+            itemVenda.setNomeProduto(produto.getNome());
             
             venda.adicionarItem(itemVenda);
         }
@@ -110,7 +110,7 @@ public class VendaServiceImpl {
             movimento.setQuantidade(itemSalvo.getQuantidade() * -1);
             movimento.setData(vendaSalva.getDataVenda()); 
             movimento.setMotivo("Venda ID: " + vendaSalva.getId());
-            movimento.setNomeProdutoSnapshot(itemSalvo.getNomeProdutoSnapshot());
+            movimento.setNomeProduto(itemSalvo.getNomeProduto());
             movimentoEstoqueRepository.save(movimento);
         }
         return new VendaResponseDTO(vendaSalva);
