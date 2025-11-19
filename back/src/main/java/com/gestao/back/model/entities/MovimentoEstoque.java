@@ -9,8 +9,7 @@ import java.time.LocalDateTime;
 public class MovimentoEstoque {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY
-    )
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
