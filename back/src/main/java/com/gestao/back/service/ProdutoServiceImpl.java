@@ -128,7 +128,7 @@ public class ProdutoServiceImpl {
             throw new ConflictException("Produto não pode ser deletado pois esta em estoque");
         }
 
-        if(!produtoRepository.getReferenceById(id).isAtivo()) {
+        if(produtoRepository.getReferenceById(id).isAtivo()) {
             throw new BadRequestException("Produto precisa estar desativado para ser deletado");
         }
         
