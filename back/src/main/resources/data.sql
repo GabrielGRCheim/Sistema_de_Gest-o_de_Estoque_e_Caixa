@@ -1,84 +1,89 @@
-MERGE INTO produtos (ID, ATIVO, CATEGORIA, CODIGO, NOME, PRECO_UNITARIO, QUANTIDADE_ESTOQUE) VALUES
-(1, true, 'Motor', 'MT-001', 'Filtro de Óleo', 29.90, 50),
-(2, true, 'Motor', 'MT-002', 'Filtro de Ar', 45.00, 30),
-(3, true, 'Elétrica', 'EL-001', 'Bateria 60Ah', 420.00, 12),
-(4, true, 'Elétrica', 'EL-002', 'Alternador 90A', 680.00, 5),
-(5, true, 'Suspensão', 'SP-001', 'Amortecedor Dianteiro', 250.00, 20),
-(6, true, 'Suspensão', 'SP-002', 'Mola Traseira', 180.00, 18),
-(7, true, 'Freios', 'FR-001', 'Pastilha de Freio', 95.00, 40),
-(8, true, 'Freios', 'FR-002', 'Disco de Freio', 210.00, 25),
-(9, false, 'Acessórios', 'AC-001', 'Tapete Automotivo', 75.00, 0),
-(10, true, 'Acessórios', 'AC-002', 'Lâmpada LED H7', 35.00, 60);
+INSERT INTO USUARIOS (ID, ATIVO, EMAIL, NOME_COMPLETO, PERFIL, SENHA)
+VALUES
+    (1, TRUE, 'admin@sistema.com', 'Administrador do Sistema', 'ADMIN', 'senhaAdmin123'),
+    (2, TRUE, 'operador@sistema.com', 'Operador Padrão', 'OPERADOR', 'senhaOperador123');
 
-MERGE INTO usuarios (id, ativo, email, nome_completo, perfil, senha) VALUES
-(1, TRUE, 'admin@sistema.com', 'Administrador do Sistema', 'ADMIN', 'senhaAdmin123'),
-(2, TRUE, 'operador@sistema.com', 'Operador Padrão', 'OPERADOR', 'senhaOperador123');
+INSERT INTO PRODUTOS
+(ID, ATIVO, CATEGORIA, CODIGO, NOME, PRECO_UNITARIO, QUANTIDADE_ESTOQUE)
+VALUES
+    (1, TRUE, 'Bebida', 'A1B2C3', 'Coca-Cola Lata 350ml', 6.50, 100),
+    (2, TRUE, 'Bebida', 'A1B2C4', 'Guaraná 2L', 9.90, 50),
+    (3, TRUE, 'Doce', 'D443KD', 'Chocolate Milka', 12.00, 40),
+    (4, TRUE, 'Limpeza', 'LP993A', 'Detergente Ypê', 3.50, 200),
+    (5, TRUE, 'Higiene', 'HG11TR', 'Sabonete Dove', 5.80, 150);
 
-MERGE INTO vendas (id, data_venda, total, troco, valor_recebido, usuario_id) VALUES
-(2, '2025-11-06 13:36:03.222437', 115.11, 4.89, 120.00, 2),
-(7, '2025-11-07 10:21:15.883122', 240.00, 10.00, 250.00, 2),
-(3, '2025-11-07 17:45:54.112903', 89.50, 0.50, 90.00, 2),
-(4, '2025-11-08 09:15:12.445877', 360.99, 39.01, 400.00, 1),
-(5, '2025-11-08 18:04:33.716542', 128.00, 2.00, 130.00, 2);
+INSERT INTO VENDAS
+(ID, DATA_VENDA, TOTAL, TROCO, VALOR_RECEBIDO, USUARIO_ID)
+VALUES
+    (1, '2025-11-10 10:15:00', 25.80, 4.20, 30.00, 2),
+    (2, '2025-11-10 14:42:12', 31.50, 18.50, 50.00, 2),
+    (3, '2025-11-11 09:55:33', 28.30, 1.70, 30.00, 2);
 
-MERGE INTO itens_venda (id, preco_unitario, quantidade, nome_produto, produto_id, venda_id) VALUES
-(1, 29.90, 2, 'Filtro de Óleo', 1, 2),
-(2, 35.00, 1, 'Lâmpada LED H7',10, 2),
-(3, 20.31, 1, 'Pastilha de Freio',7, 2),
-(4, 95.00, 2, 'Pastilha de Freio',7, 7),
-(5, 35.00, 1, 'Lâmpada LED H7',10, 7),
-(6, 15.00, 1, 'Filtro de Óleo',1, 7),
-(7, 29.90, 1, 'Filtro de Óleo',1, 3),
-(8, 35.00, 1, 'Lâmpada LED H7',10, 3),
-(9, 24.60, 1, 'Pastilha de Freio',7, 3),
-(10, 250.00, 1, 'Amortecedor Dianteiro',5, 4),
-(11, 95.00, 1, 'Pastilha de Freio',7, 4),
-(12, 15.99, 1, 'Filtro de Óleo',1, 4),
-(13, 95.00, 1, 'Pastilha de Freio',7, 5),
-(14, 33.00, 1, 'Lâmpada LED H7',10, 5);
+INSERT INTO ITENS_VENDA
+(ID, NOME_PRODUTO, PRECO_UNITARIO, QUANTIDADE, PRODUTO_ID, VENDA_ID)
+VALUES
+-- VENDA 1
+(1, 'Coca-Cola Lata 350ml', 6.50, 2, 1, 1),
+(2, 'Sabonete Dove', 5.80, 1, 5, 1),
 
-
-MERGE INTO movimentos_estoque (id, motivo, data, quantidade, tipo, nome_produto, produto_id, usuario_id) VALUES
 -- VENDA 2
-(2, 'Venda ID: 2', '2025-11-06 13:36:03', -2, 'SAIDA_VENDA', 'Filtro de Óleo', 1, 2),
-(3, 'Venda ID: 2', '2025-11-06 13:36:03', -1, 'SAIDA_VENDA', 'Lâmpada LED H7',10, 2),
-(4, 'Venda ID: 2', '2025-11-06 13:36:03', -1, 'SAIDA_VENDA', 'Pastilha de Freio',7, 2),
-
--- VENDA 7
-(5, 'Venda ID: 7', '2025-11-07 10:21:15', -2, 'SAIDA_VENDA', 'Pastilha de Freio',7, 2),
-(6, 'Venda ID: 7', '2025-11-07 10:21:15', -1, 'SAIDA_VENDA', 'Lâmpada LED H7',10, 2),
-(7, 'Venda ID: 7', '2025-11-07 10:21:15', -1, 'SAIDA_VENDA', 'Filtro de Óleo',1, 2),
+(3, 'Guaraná 2L', 9.90, 1, 2, 2),
+(4, 'Chocolate Milka', 12.00, 1, 3, 2),
+(5, 'Detergente Ypê', 3.70, 1, 4, 2),
+(6, 'Sabonete Dove', 5.80, 1, 5, 2),
 
 -- VENDA 3
-(8, 'Venda ID: 3', '2025-11-07 17:45:54', -1, 'SAIDA_VENDA', 'Filtro de Óleo',1, 2),
-(9, 'Venda ID: 3', '2025-11-07 17:45:54', -1, 'SAIDA_VENDA', 'Lâmpada LED H7',10, 2),
-(10, 'Venda ID: 3', '2025-11-07 17:45:54', -1, 'SAIDA_VENDA', 'Pastilha de Freio',7, 2),
+(7, 'Guaraná 2L', 9.90, 1, 2, 3),
+(8, 'Coca-Cola Lata 350ml', 6.50, 1, 1, 3),
+(9, 'Sabonete Dove', 5.80, 1, 5, 3),
+(10, 'Detergente Ypê', 3.50, 1, 4, 3),
+(11, 'Chocolate Milka', 14.60, 1, 3, 3);
 
--- VENDA 4
-(11, 'Venda ID: 4', '2025-11-08 09:15:12', -1, 'SAIDA_VENDA', 'Amortecedor Dianteiro',5, 2),
-(12, 'Venda ID: 4', '2025-11-08 09:15:12', -1, 'SAIDA_VENDA', 'Pastilha de Freio',7, 2),
-(13, 'Venda ID: 4', '2025-11-08 09:15:12', -1, 'SAIDA_VENDA', 'Filtro de Óleo',1, 2),
+INSERT INTO MOVIMENTOS_ESTOQUE
+(ID, MOTIVO, DATA, NOME_PRODUTO, QUANTIDADE, TIPO, PRODUTO_ID, USUARIO_ID)
+VALUES
+-- VENDA 1
+(1, 'Venda ID: 1', '2025-11-10 10:15:00', 'Coca-Cola Lata 350ml', -2, 'SAIDA_VENDA', 1, 2),
+(2, 'Venda ID: 1', '2025-11-10 10:15:00', 'Sabonete Dove', -1, 'SAIDA_VENDA', 5, 2),
 
--- VENDA 5
-(14, 'Venda ID: 5', '2025-11-08 18:04:33', -1, 'SAIDA_VENDA', 'Pastilha de Freio',7, 2),
-(15, 'Venda ID: 5', '2025-11-08 18:04:33', -1, 'SAIDA_VENDA', 'Lâmpada LED H7',10, 2);
+-- VENDA 2
+(3, 'Venda ID: 2', '2025-11-10 14:42:12', 'Guaraná 2L', -1, 'SAIDA_VENDA', 2, 2),
+(4, 'Venda ID: 2', '2025-11-10 14:42:12', 'Chocolate Milka', -1, 'SAIDA_VENDA', 3, 2),
+(5, 'Venda ID: 2', '2025-11-10 14:42:12', 'Detergente Ypê', -1, 'SAIDA_VENDA', 4, 2),
+(6, 'Venda ID: 2', '2025-11-10 14:42:12', 'Sabonete Dove', -1, 'SAIDA_VENDA', 5, 2),
 
--- -- PRODUTOS (último ID = 10)
--- ALTER TABLE PRODUTOS
---     ALTER COLUMN ID RESTART WITH 11;
---
--- -- ITENS_VENDA (último ID = 14)
--- ALTER TABLE ITENS_VENDA
---     ALTER COLUMN ID RESTART WITH 15;
---
--- -- MOVIMENTOS_ESTOQUE (último ID = 15)
--- ALTER TABLE MOVIMENTOS_ESTOQUE
---     ALTER COLUMN ID RESTART WITH 16;
---
--- -- VENDAS (último ID = 7)
--- ALTER TABLE VENDAS
---     ALTER COLUMN ID RESTART WITH 6;
---
--- -- USUARIOS (IDs inseridos = 1 e 2)
--- ALTER TABLE USUARIOS
---     ALTER COLUMN ID RESTART WITH 3;
+-- VENDA 3
+(7, 'Venda ID: 3', '2025-11-11 09:55:33', 'Guaraná 2L', -1, 'SAIDA_VENDA', 2, 2),
+(8, 'Venda ID: 3', '2025-11-11 09:55:33', 'Coca-Cola Lata 350ml', -1, 'SAIDA_VENDA', 1, 2),
+(9, 'Venda ID: 3', '2025-11-11 09:55:33', 'Sabonete Dove', -1, 'SAIDA_VENDA', 5, 2),
+(10, 'Venda ID: 3', '2025-11-11 09:55:33', 'Detergente Ypê', -1, 'SAIDA_VENDA', 4, 2),
+(11, 'Venda ID: 3', '2025-11-11 09:55:33', 'Chocolate Milka', -1, 'SAIDA_VENDA', 3, 2);
+
+-- USUARIOS
+ALTER TABLE USUARIOS ALTER COLUMN ID RESTART WITH (
+SELECT COALESCE(MAX(ID),0) + 1 FROM USUARIOS
+    );
+-- PRODUTOS
+ALTER TABLE PRODUTOS ALTER COLUMN ID RESTART WITH (
+SELECT COALESCE(MAX(ID),0) + 1 FROM PRODUTOS
+    );
+
+-- VENDAS
+ALTER TABLE VENDAS ALTER COLUMN ID RESTART WITH (
+SELECT COALESCE(MAX(ID),0) + 1 FROM VENDAS
+    );
+
+-- ITENS_VENDA
+ALTER TABLE ITENS_VENDA ALTER COLUMN ID RESTART WITH (
+SELECT COALESCE(MAX(ID),0) + 1 FROM ITENS_VENDA
+    );
+
+-- MOVIMENTOS_ESTOQUE
+ALTER TABLE MOVIMENTOS_ESTOQUE ALTER COLUMN ID RESTART WITH (
+SELECT COALESCE(MAX(ID),0) + 1 FROM MOVIMENTOS_ESTOQUE
+    );
+
+-- USUARIOS
+ALTER TABLE USUARIOS ALTER COLUMN ID RESTART WITH (
+SELECT COALESCE(MAX(ID),0) + 1 FROM USUARIOS
+    );
