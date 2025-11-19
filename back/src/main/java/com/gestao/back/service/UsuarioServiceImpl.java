@@ -116,6 +116,9 @@ public class UsuarioServiceImpl {
         if (!usuarioRepository.existsById(id)) {
             throw new NotFoundException("Usuário não encontrado");
         }
+        if(usuarioRepository.getReferenceById(id).getAtivo()){
+            throw new BadRequestException("Usúario não pode ser deletado enquanto estiver ativo");
+        }
         auditoriaService.registrar("usuarios","UPDATE",cloneUsuario(usuarioRepository.getReferenceById(id)),null,id);
         usuarioRepository.deleteById(id);
     }
